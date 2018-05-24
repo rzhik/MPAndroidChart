@@ -245,6 +245,20 @@ public class PieChart extends PieRadarChartBase<PieData> {
                     drawAngle = Math.max(drawAngle, mMinAngleForSlices);
 
                     if (cnt != 0 && cnt == set.getEntryCount() - 1) { // if it is the last slice
+                        // if angle overflow, decrease previous slices
+                        float total = mAbsoluteAngles[cnt - 1] + drawAngle;
+                        if (total > mMaxAngle) {
+                            float c = mMaxAngle / total;
+                            for (int k = 0; k < set.getEntryCount() - 1; k++) {
+                                mDrawAngles[k] = mDrawAngles[k] * c;
+                                if (k == 0) {
+                                    mAbsoluteAngles[k] = mDrawAngles[k];
+                                } else {
+                                    mAbsoluteAngles[k] = mAbsoluteAngles[k - 1] + mDrawAngles[k];
+                                }
+                            }
+                        }
+
                         // drawAngle should be the rest of space
                         drawAngle = mMaxAngle - mAbsoluteAngles[cnt - 1];
                     }
